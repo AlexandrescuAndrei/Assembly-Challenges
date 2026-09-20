@@ -1,0 +1,53 @@
+TASK 1
+mutam n in edx si shiftam la stanga cu 8 pozitii, apoi la dreapta cu 8 pozitii ca sa ramanem doar cu ultimii 24 de biti, iar primii 8 sa fie 0. 
+in edx avem acum salile pe care vrea sa le rezerve. mutam n in ecx si shiftam la dreapta cu 24 de pozitii ca sa avem acei 8 biti la finalul lui ecx,
+iar primii 24 de biti din ecx sa fie 0. acum avem in ecx id-ul furnicii. mergem in vectorul de permisiuni cu offset-ul 4*ecx ca sa luam permisiunile
+furnicii cu id-ul din ecx. punem aceste permisiuni in eax. facem o operatie si pe biti intre eax si edx, iar rezultatul ramane in eax(and eax, edx)
+si daca acest rezultat este egal cu edx inseamna ca furnica are permisiuni sa rezerve salile pe care si le doreste, altfel nu.
+
+TASK 2
+
+SUBTASK 1
+am implementat un algoritm de sortare care in C are fi un fel de for in for, plecand de la ultimul element din vector(indexul lui e in ecx) si iau toate 
+elementele de dinaintea lui si le compar cu el. dupa ce am facut asta, scad ecx(trec la penultimul element) si cu eax plec chiar din spatele lui si 
+ajung pana la inceputul vectorului. practic, compar ultimul element cu toate de dinaintea lui, apoi ma mut la penultimul(scad ecx) si il compar cu toate de 
+dinaintea lui(pornesc cu eax din spatele lui, deci de la ecx - 1 si ma duc pana la inceput) si tot asa. la fiecare pas pun pe stiva v[eax - 1] si apoi 
+v[ecx - 1] si apoi le compar. prima data pun ebx pe stiva pentru ca o sa am nevoie de ebx in rezolvare, apoi iau in ebx din stiva v[ecx - 1] si in 
+edx iau din stiva v[eax - 1]. pun pe stiva eax si ecx pentru ca voi avea nevoie de ele in rezolvare. mut in al primul byte din v[eax - 1] si in cl primul byte 
+din v[ecx - 1]. compar acesti bytes si daca in ecx am valoarea mai mare (in v[ecx - 1] am avut byte ul mai mare) trebuie sa interschimb elementele. 
+daca in eax am valoarea mai mare (in v[eax - 1] am avut byte ul mai mare) inseamna ca e bine sortat. daca sunt egale, trec la urmatorul criteriu de sortare,
+care e dupa al doilea byte din fiecare element. daca din nou sunt egale, atunci trecem la ultimul criteriu care e dupa username. 
+
+SUBTASK 2
+ideea acestui subtask este ca pt fiecare element din vector testez daca passkey ul asociat este sau nu al unui hacker. pentru fiecare criteriu testez contrariul 
+si in caz ca se intampla, atunci nu e hacker. prima data testez daca ultimul bit din parola este 0 si daca e atunci nu e hacker. analog pentru primul bit. 
+apoi iau separat ultimii 8 biti din parola si un hacker ar trebui sa aiba numar impar de biti de 1(ultimul e sigur 1 + numar par de biti de 1 in cei 7 ramasi). 
+deci daca in acesti 8 biti am gasit numar par de biti de 1, atunci nu e hacker. apoi iau primii 8 biti. daca e hacker ar trebui sa aiba numar par de biti de 1
+(primul care e sigur 1 + numar impar in ceilalti 7). deci daca in acesti 8 biti am gasit numar impar de biti de 1, nu e hacker. daca nu am ajuns la label-ul
+no_hacker dupa toate aceste operatiuni inseamna ca e hacker.
+
+TASK 3
+la acest task am urmat pasii descrisi in enunt. am retinut in al acel t din enunt. 
+Pentru criptare, initializez al cu primul byte din text, apoi adaug 
+byte ul de pe pozitia i din cheia secreta. apoi pun in al sbox[t]. in ebx imi creez indexul care imi trebuie (i+1)%8 astfel: daca ebx < 7 atunci edx o sa fie
+ebx + 1, altfel edx o sa fie 0. adaugam apoi la al urmatorul byte din bloc obtinut cu ajutorul lui edx. la final rotesc al cu o pozitie la stanga si actualizez
+elementul corespunzator. 
+Pentru decriptare, pornim cu ebx de la 7(elementele trebuie luate de la final). in al creez top si in cl creez bottom. pentru top, mut in al byte ul i din bloc
+care se afla la adresa esi + ebx si apoi adun byte ul i din cheia secreta care se afla la adresa edi + ebx. apoi punem in al sbox de acest byte. avem acum top.
+pentru bottom, cream in edx pozitia care ne trebuie (i+1)%8 si mutam in cl byte ul de pe acea pozitie din text. il rotim la dreapta cu o pozitie si am obtinut 
+bottom. acum facem bottom - top cu comanda sub cl, al si vom avea rezultatul dorit in cl. modificam elementul corespunzator din vector. 
+
+TASK 4
+am un loop in care tot intru cat timp nu am ajuns inca la ultima linie si nici la ultima coloana(ies din el cand ajung fie pe ultima linie, fie pe ultima coloana).
+primul lucru pe care il fac la un anumit pas este sa marchez elementul curent cu 1 ca sa nu ma mai intorc la el. astfel, la fiecare pas doar una dintre cele 
+4 directii va contine 0, deci am o singura optiune de mutare. iau pe rand fiecare directie si am grija la indicii de linie si coloana. prima data ma duc in nord
+si scad linia. daca nu mai sunt in matrice (eax devine -1) inseamna ca nu pot merge in nord si ma duc la urmatorul label, vest. daca totusi sunt in matrice, 
+vad daca elementul nou(cel din nord) este 0, caz in care sar la labelul next (merg la urmatoarea instanta a buclei cu noile coordonate, cele ale vecinului
+din nord). daca acum am ajuns la vest inseamna ca sigur am trecut prin labelul nord, deci prima data cresc inapoi eax(linia) pentru a reveni la coordonatele 
+elementului curent. similar cu nord, scad coloana intai si apoi verific daca ma aflu in matrice (compar ebx cu - 1). daca ebx este -1, sar la sud. daca 
+totusi ma aflu in matrice, verific daca acest element din vest este 0, caz in care sar la next, adica merg in urmatoarea instanta a buclei cu noile coordonate,
+cele ale vecinului din vest. daca am ajuns la sud, inseamna ca sigur am trecut prin labelul vest, deci prima data cresc coloana pentru a reveni la coordonatele 
+elementului curent. de data aceasta cresc linia si nu mai verific nimic, deoarece stiu ca nu ma aflam pe ultima linie, intrucat daca eram pe ultima linie as 
+fi iesit din bucla. compar elementul din sud cu 0 si daca e egal cu 0, sar la next si intru in urmatoarea instanta a buclei cu noile coordonate, cele ale 
+vecinului din sud, iar daca nu, ajung in est unde trebuie doar sa actualizez linia si coloana si nu mai verific nimic altceva pentru ca daca am ajuns pana 
+acolo inseamna ca niciuna din celelalte 3 directii nu a fost buna, si cum stiu sigur ca exact o directie este buna, inseamna ca asta este. 

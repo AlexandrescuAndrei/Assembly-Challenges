@@ -1,53 +1,174 @@
-TASK 1
-mutam n in edx si shiftam la stanga cu 8 pozitii, apoi la dreapta cu 8 pozitii ca sa ramanem doar cu ultimii 24 de biti, iar primii 8 sa fie 0. 
-in edx avem acum salile pe care vrea sa le rezerve. mutam n in ecx si shiftam la dreapta cu 24 de pozitii ca sa avem acei 8 biti la finalul lui ecx,
-iar primii 24 de biti din ecx sa fie 0. acum avem in ecx id-ul furnicii. mergem in vectorul de permisiuni cu offset-ul 4*ecx ca sa luam permisiunile
-furnicii cu id-ul din ecx. punem aceste permisiuni in eax. facem o operatie si pe biti intre eax si edx, iar rezultatul ramane in eax(and eax, edx)
-si daca acest rezultat este egal cu edx inseamna ca furnica are permisiuni sa rezerve salile pe care si le doreste, altfel nu.
+# Assembly-Challenges
 
-TASK 2
+A collection of low-level programming exercises implemented in **x86 Assembly**, focused on bit manipulation, memory access, sorting, cryptographic transformations, matrix traversal, and direct register-level programming.
 
-SUBTASK 1
-am implementat un algoritm de sortare care in C are fi un fel de for in for, plecand de la ultimul element din vector(indexul lui e in ecx) si iau toate 
-elementele de dinaintea lui si le compar cu el. dupa ce am facut asta, scad ecx(trec la penultimul element) si cu eax plec chiar din spatele lui si 
-ajung pana la inceputul vectorului. practic, compar ultimul element cu toate de dinaintea lui, apoi ma mut la penultimul(scad ecx) si il compar cu toate de 
-dinaintea lui(pornesc cu eax din spatele lui, deci de la ecx - 1 si ma duc pana la inceput) si tot asa. la fiecare pas pun pe stiva v[eax - 1] si apoi 
-v[ecx - 1] si apoi le compar. prima data pun ebx pe stiva pentru ca o sa am nevoie de ebx in rezolvare, apoi iau in ebx din stiva v[ecx - 1] si in 
-edx iau din stiva v[eax - 1]. pun pe stiva eax si ecx pentru ca voi avea nevoie de ele in rezolvare. mut in al primul byte din v[eax - 1] si in cl primul byte 
-din v[ecx - 1]. compar acesti bytes si daca in ecx am valoarea mai mare (in v[ecx - 1] am avut byte ul mai mare) trebuie sa interschimb elementele. 
-daca in eax am valoarea mai mare (in v[eax - 1] am avut byte ul mai mare) inseamna ca e bine sortat. daca sunt egale, trec la urmatorul criteriu de sortare,
-care e dupa al doilea byte din fiecare element. daca din nou sunt egale, atunci trecem la ultimul criteriu care e dupa username. 
+The repository contains four main tasks, each approaching a different type of problem entirely from assembly. Instead of relying on high-level data structures or library abstractions, the implementations work directly with registers, stack operations, memory offsets, bit masks, loops, comparisons, and pointer arithmetic.
 
-SUBTASK 2
-ideea acestui subtask este ca pt fiecare element din vector testez daca passkey ul asociat este sau nu al unui hacker. pentru fiecare criteriu testez contrariul 
-si in caz ca se intampla, atunci nu e hacker. prima data testez daca ultimul bit din parola este 0 si daca e atunci nu e hacker. analog pentru primul bit. 
-apoi iau separat ultimii 8 biti din parola si un hacker ar trebui sa aiba numar impar de biti de 1(ultimul e sigur 1 + numar par de biti de 1 in cei 7 ramasi). 
-deci daca in acesti 8 biti am gasit numar par de biti de 1, atunci nu e hacker. apoi iau primii 8 biti. daca e hacker ar trebui sa aiba numar par de biti de 1
-(primul care e sigur 1 + numar impar in ceilalti 7). deci daca in acesti 8 biti am gasit numar impar de biti de 1, nu e hacker. daca nu am ajuns la label-ul
-no_hacker dupa toate aceste operatiuni inseamna ca e hacker.
+The exercises cover permission verification encoded inside integers, sorting structured records using multiple criteria, analyzing binary passkeys, implementing the Treyfer block cipher in both directions, and navigating a labyrinth represented as a matrix.
 
-TASK 3
-la acest task am urmat pasii descrisi in enunt. am retinut in al acel t din enunt. 
-Pentru criptare, initializez al cu primul byte din text, apoi adaug 
-byte ul de pe pozitia i din cheia secreta. apoi pun in al sbox[t]. in ebx imi creez indexul care imi trebuie (i+1)%8 astfel: daca ebx < 7 atunci edx o sa fie
-ebx + 1, altfel edx o sa fie 0. adaugam apoi la al urmatorul byte din bloc obtinut cu ajutorul lui edx. la final rotesc al cu o pozitie la stanga si actualizez
-elementul corespunzator. 
-Pentru decriptare, pornim cu ebx de la 7(elementele trebuie luate de la final). in al creez top si in cl creez bottom. pentru top, mut in al byte ul i din bloc
-care se afla la adresa esi + ebx si apoi adun byte ul i din cheia secreta care se afla la adresa edi + ebx. apoi punem in al sbox de acest byte. avem acum top.
-pentru bottom, cream in edx pozitia care ne trebuie (i+1)%8 si mutam in cl byte ul de pe acea pozitie din text. il rotim la dreapta cu o pozitie si am obtinut 
-bottom. acum facem bottom - top cu comanda sub cl, al si vom avea rezultatul dorit in cl. modificam elementul corespunzator din vector. 
+The project was useful for understanding how algorithms that are relatively straightforward in a higher-level language have to be decomposed into much smaller operations when implemented directly in assembly.
 
-TASK 4
-am un loop in care tot intru cat timp nu am ajuns inca la ultima linie si nici la ultima coloana(ies din el cand ajung fie pe ultima linie, fie pe ultima coloana).
-primul lucru pe care il fac la un anumit pas este sa marchez elementul curent cu 1 ca sa nu ma mai intorc la el. astfel, la fiecare pas doar una dintre cele 
-4 directii va contine 0, deci am o singura optiune de mutare. iau pe rand fiecare directie si am grija la indicii de linie si coloana. prima data ma duc in nord
-si scad linia. daca nu mai sunt in matrice (eax devine -1) inseamna ca nu pot merge in nord si ma duc la urmatorul label, vest. daca totusi sunt in matrice, 
-vad daca elementul nou(cel din nord) este 0, caz in care sar la labelul next (merg la urmatoarea instanta a buclei cu noile coordonate, cele ale vecinului
-din nord). daca acum am ajuns la vest inseamna ca sigur am trecut prin labelul nord, deci prima data cresc inapoi eax(linia) pentru a reveni la coordonatele 
-elementului curent. similar cu nord, scad coloana intai si apoi verific daca ma aflu in matrice (compar ebx cu - 1). daca ebx este -1, sar la sud. daca 
-totusi ma aflu in matrice, verific daca acest element din vest este 0, caz in care sar la next, adica merg in urmatoarea instanta a buclei cu noile coordonate,
-cele ale vecinului din vest. daca am ajuns la sud, inseamna ca sigur am trecut prin labelul vest, deci prima data cresc coloana pentru a reveni la coordonatele 
-elementului curent. de data aceasta cresc linia si nu mai verific nimic, deoarece stiu ca nu ma aflam pe ultima linie, intrucat daca eram pe ultima linie as 
-fi iesit din bucla. compar elementul din sud cu 0 si daca e egal cu 0, sar la next si intru in urmatoarea instanta a buclei cu noile coordonate, cele ale 
-vecinului din sud, iar daca nu, ajung in est unde trebuie doar sa actualizez linia si coloana si nu mai verific nimic altceva pentru ca daca am ajuns pana 
-acolo inseamna ca niciuna din celelalte 3 directii nu a fost buna, si cum stiu sigur ca exact o directie este buna, inseamna ca asta este. 
+## Permission Checking with Bit Masks
+
+The first task implements a permission-checking system based entirely on bit manipulation.
+
+A single 32-bit value contains two different pieces of information. The upper 8 bits represent an identifier, while the lower 24 bits represent a set of requested permissions.
+
+The implementation separates these two components using shift operations.
+
+The lower 24 bits are isolated and stored as the permission mask corresponding to the requested rooms. The upper 8 bits are shifted into the lower part of another register and used as an index into an external permission table.
+
+Once the permission mask associated with the corresponding identifier is loaded, a bitwise `AND` operation is performed between the available permissions and the requested permissions.
+
+If the result is identical to the complete requested mask, every requested permission is available and the result is set to true. Otherwise, the request is rejected.
+
+This task is mainly based on understanding binary representations and using bit masks efficiently instead of testing individual permissions one at a time.
+
+It also involves indexed memory access, since the extracted identifier is used to locate the appropriate 32-bit entry inside the permissions array.
+
+## Request Sorting and Structured Data
+
+The second task works with an array of structured request records stored directly in memory.
+
+Each record occupies 55 bytes, so accessing an element requires manually calculating its address from the base pointer and the current index.
+
+The sorting implementation repeatedly compares records and exchanges their complete 55-byte memory regions when they are found in the wrong order.
+
+Unlike sorting a simple integer array, the comparison uses several fields from each structure.
+
+The first byte is checked first. If this does not determine the ordering, the second byte is compared. If the first two criteria are equal, the implementation continues by comparing the username stored inside the structure character by character.
+
+This creates a multi-criteria comparison entirely in assembly.
+
+The swap operation also has to be implemented manually. Instead of exchanging references or using a library function, the code iterates through all 55 bytes and exchanges the contents of the two structures byte by byte.
+
+This task required careful management of registers because the same registers are needed for indexes, addresses, comparison values, and temporary data. Values that must survive part of the algorithm are temporarily preserved on the stack and restored after the comparison is finished.
+
+It is a good example of how arrays of structures are represented in memory and how operations such as indexing, comparison, and swapping eventually reduce to address calculations and byte-level memory operations.
+
+## Passkey Analysis
+
+Another part of the second task analyzes 16-bit passkeys and determines whether they satisfy a specific collection of binary properties.
+
+Each request contains a passkey stored inside its 55-byte record.
+
+The implementation extracts the passkey and evaluates several conditions directly at bit level.
+
+The least significant bit is checked first, followed by the most significant bit. The passkey is then divided logically into its lower and upper 8-bit halves.
+
+The number of set bits in each half is counted manually using masks and shifts.
+
+For the lower eight bits, the implementation verifies the required parity of the number of bits equal to one. A similar check is then performed for the upper eight bits using the opposite parity condition required by the task.
+
+If any condition fails, the corresponding request is marked as not matching the required passkey pattern. If every binary condition is satisfied, the result for that request is set accordingly.
+
+The operation is repeated for every element of the request array, with the output written into a separate result array.
+
+This part of the project focuses heavily on bitwise operations such as `AND`, shifts, masks, and parity checks, as well as on extracting smaller fields from larger binary values.
+
+## Treyfer Encryption and Decryption
+
+The third task implements both encryption and decryption for the **Treyfer block cipher**.
+
+The implementation works with an 8-byte text block and an 8-byte secret key.
+
+A predefined substitution box containing 256 values is included directly in the assembly source, and the transformation is repeated for 10 rounds.
+
+During encryption, the algorithm keeps an intermediate value in an 8-bit register.
+
+For every byte position, the corresponding key byte is added to the current value. The result is used as an index into the substitution box, after which the next byte of the text block is incorporated into the transformation.
+
+A one-bit left rotation is then applied and the appropriate byte inside the block is updated.
+
+The transition from the last byte back to the first is handled explicitly so that the next position behaves as `(i + 1) % 8`.
+
+The entire process is repeated across all eight positions for every encryption round.
+
+Decryption performs the inverse transformation.
+
+The bytes are processed in reverse order, beginning from the final position of the block. The same key and substitution table are used, but the rotation and arithmetic operations are reversed so that the original block can be reconstructed.
+
+A right rotation is used where encryption performs a left rotation, and the transformation based on the substituted value is reversed through subtraction.
+
+Implementing both directions directly in assembly required careful control over byte-sized registers, temporary values, array indexes, wrap-around behavior, and the order in which the transformations are performed.
+
+## Labyrinth Traversal
+
+The fourth task implements the traversal of a labyrinth represented as a two-dimensional character matrix.
+
+The function receives the number of rows and columns, the address of the matrix, and two output pointers used to return the coordinates of the exit.
+
+Traversal starts from the initial position and continues until the current cell reaches either the final row or the final column.
+
+Visited cells are marked directly in the labyrinth by replacing their value with `'1'`. This prevents the algorithm from returning to positions that were already processed.
+
+At each step, neighboring cells are inspected according to the movement logic implemented by the task.
+
+The code checks directions while also handling matrix boundaries manually. Moving north or west, for example, requires checking whether the resulting row or column would become negative before attempting to access the corresponding memory.
+
+Accessing an element of the matrix also requires manual pointer calculations.
+
+Because the labyrinth is represented as a `char **`, the implementation first calculates the location of the pointer corresponding to the desired row, loads that pointer, and then adds the column offset to reach the required cell.
+
+Once the traversal reaches the exit condition, the final row and column are written through the output pointers supplied to the function.
+
+This task combines pointer arithmetic, multidimensional memory access, boundary checking, state modification, and control flow using jumps and labels.
+
+## Working Directly with Memory and Registers
+
+Across all four tasks, most operations that would normally be handled automatically in a higher-level language have to be implemented explicitly.
+
+Array indexing requires calculating offsets manually. Structured records require knowing the exact size and position of every field. Temporary values have to be assigned to registers or stored on the stack when there are not enough registers available.
+
+The code makes extensive use of registers such as `EAX`, `EBX`, `ECX`, `EDX`, `ESI`, and `EDI`, together with their smaller 8-bit and 16-bit variants when working with characters, bit fields, and passkeys.
+
+The stack is also used to preserve values while registers are temporarily reused for comparisons or address calculations.
+
+Control flow is implemented through labels, conditional jumps, and explicit loop conditions rather than language-level `for`, `while`, or `if` statements.
+
+The project therefore covers more than the individual algorithms themselves. It also provides practice with calling conventions, stack frames, register preservation, pointer arithmetic, binary data representation, and translating higher-level algorithmic ideas into lower-level instructions.
+
+## Project Structure
+
+The repository is divided according to the four main tasks:
+
+- `task-1/check_permission.asm` — extracts an identifier and permission mask from a packed value and validates the requested permissions using bitwise operations
+- `task-2/subtask1.asm` — sorts 55-byte request structures using multiple comparison criteria
+- `task-2/subtask2.asm` — analyzes 16-bit passkeys using individual bits and bit-count parity rules
+- `task-3/treyfer.asm` — implements Treyfer encryption and decryption for 8-byte blocks using a substitution box and multiple rounds
+- `task-4/labyrinth.asm` — traverses a two-dimensional labyrinth and returns the coordinates of its exit
+- `README` — original implementation notes describing the approach taken for each task
+
+The repository contains the assembly implementations themselves rather than the complete surrounding assignment infrastructure.
+
+The source files reference supporting components such as `io.mac` and external symbols provided by the original environment, so they are intended to be integrated with that support code rather than treated as completely standalone executables.
+
+## Technologies and Concepts
+
+- x86 Assembly
+- NASM syntax
+- 32-bit registers
+- Bitwise operations
+- Bit masks
+- Binary data representation
+- Bit shifting
+- Bit rotation
+- Register-level programming
+- Stack operations
+- Stack frames
+- Pointer arithmetic
+- Manual memory addressing
+- Arrays of structures
+- Multi-criteria sorting
+- Byte-level data manipulation
+- Structured memory layouts
+- Passkey analysis
+- Bit counting and parity
+- Treyfer block cipher
+- Encryption and decryption
+- Substitution boxes
+- Matrix traversal
+- Boundary checking
+- Conditional jumps
+- Low-level control flow
+- Calling conventions
